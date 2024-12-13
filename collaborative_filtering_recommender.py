@@ -4,8 +4,12 @@ import pandas as pd
 import requests
 class CollaborativeRecommender:
     
+    
+    
     MODEL_NAME = 'Collaborative Filtering'
     MODEL_PATH = "./collab_model_weights.pkl"
+    
+    #Chargement des poids du modèle collaboratif à partir d'une GitHub Release
     if not os.path.exists(MODEL_PATH):
         url = " https://github.com/JulienRapacki/fontion_http_trigger/releases/download/v0/collab_model_weights.pkl"
         response = requests.get(url)
@@ -26,25 +30,18 @@ class CollaborativeRecommender:
         # Convert user_id to int if it's not already
         user_id = int(person_id)
         
-        # Check if user_id exists in the user_item matrix
-        # if user_id not in self.user_item.indices:
-        #     # If user doesn't exist, return empty DataFrame
-        #     return pd.DataFrame(columns=['click_article_id', 'score'])
-        
         # Get recommendations
         reco = self.collaborative_model.recommend(user_id, self.user_item[user_id], N=topn, filter_already_liked_items=True)
         
 
-        # Create DataFrame of recommendations
+        # Dataframe de recommendations
         result = pd.DataFrame({'click_article_id': reco[0], 'recStrength': reco[1]})
         
-        # Filter out items_to_ignore
+        # Filtre les articles déjà consultés
         result = result[~result['click_article_id'].isin(items_to_ignore)]
         
-        # Ensure we return topn items
+        # Filtre top n
         result = result.head(topn)
 
         return result
 
-# Instantiate the modelget_model_name
-# cf_recommender_model = CollaborativeRecommender(df_clicks, csr_user_item)
